@@ -1,6 +1,6 @@
 import httpx
 
-TEAM_TOKEN = 'ka6xJpfnxeaeRjAvNvxNvxj3'
+TEAM_TOKEN = ''
 
 async def get_monitors(TEAM_TOKEN):
     async with httpx.AsyncClient(verify=False, timeout=None) as client:
