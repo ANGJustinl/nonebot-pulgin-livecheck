@@ -1,10 +1,15 @@
+import os
 import uuid
+import json
 
-from config import Config
+from .config import Config
 from nonebot import get_driver, on_command
 from nonebot.log import logger
+from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
-from utils import (
+from nonebot.adapters.onebot.v11 import Message, MessageEvent
+from nonebot.adapters.onebot.v11.helpers import extract_numbers
+from .utils import (
     add_page_resource,
     add_page_section,
     create_heartbeat,
@@ -18,15 +23,13 @@ subdomain = env_config.livecheck_statuspage_subdomain
 
 statuspage_generation = on_command(
     "生成服务页面",
-    aliases={"statuspage_generate", "生成页面"},
+    aliases={"test", "生成页面"},
     block=True,
     priority=12,
-    permission=SUPERUSER,
 )
 error_cmd = "请检查命令行提示"
 
 
-@statuspage_generation.handle()
 async def statuspage_generate(TEAM_TOKEN, heartbeat_name, subdomain):
     if TEAM_TOKEN is None:
         logger.opt(colors=True).error("<y>无TEAM_TOKEN</y> ")
@@ -48,6 +51,12 @@ async def statuspage_generate(TEAM_TOKEN, heartbeat_name, subdomain):
     except Exception as e:
         logger.opt(colors=True).error("<y>心跳包检测</y>创建失败 " + str(e))
         statuspage_generate.finish("心跳包检测创建失败" + error_cmd)
+
+    if not os.path.exists("data/livecheck"):
+        os.makedirs("data/livecheck")
+        logger.opt(colors=True).info("无url存储目录, 已在bot主目录 创建<y>data/livecheck</y>文件夹")
+    with open("data/livecheck/livecheck_url.json", "w") as f:
+        json.dump(heartbeat_url_list, f, indent=4, ensure_ascii=False)
 
     if subdomain is not str():
         subdomain = uuid.uuid1()
@@ -80,3 +89,9 @@ async def statuspage_generate(TEAM_TOKEN, heartbeat_name, subdomain):
         statuspage_generate.finish(
             "页面创建成功,打开 https://" + str(subdomain) + ".betteruptime.com 访问你的页面!"
         )
+
+
+@statuspage_generation.handle()
+async def _(msg: Message = CommandArg()):
+    heartbeat_name = "bottest1"
+    await statuspage_generate(TEAM_TOKEN=TEAM_TOKEN, heartbeat_name=heartbeat_name)

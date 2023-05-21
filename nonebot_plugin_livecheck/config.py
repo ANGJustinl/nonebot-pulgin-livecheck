@@ -1,13 +1,12 @@
-from typing import Union
-
+from typing import Union, Optional
 from pydantic import BaseSettings
 
 
 class Config(BaseSettings):
-    livecheck_hour: int = 1
-    livecheck_url: Union[str, list]
-    livecheck_team_token: str
-    livecheck_statuspage_subdomain: str
+    livecheck_hour: Optional[int] = 1
+    livecheck_url: Optional[Union[str, list[str]]] = []
+    livecheck_team_token: Optional[str]
+    livecheck_statuspage_subdomain: Optional[str]
 
     class Config:
         extra = "ignore"
