@@ -1,8 +1,10 @@
 name: Publish Python 📦 distributions 📦 to PyPI
 
 on: 
-  push
-  pull_request
+  push:
+    branches:
+    - main
+
 
 jobs:
   build-n-publish:
