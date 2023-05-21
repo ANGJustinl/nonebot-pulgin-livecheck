@@ -64,4 +64,3 @@ async def add_page_resource(TEAM_TOKEN, status_page_id, resource_id_list, heartb
                 return [status, result]
             result = resp.status_code
         return [status, result]
-
